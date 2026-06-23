@@ -1,11 +1,8 @@
 # Publishes leafdocs to npm with provenance when a v* tag is pushed.
 #
-# Auth — two options:
-#   A) Trusted Publishing (recommended, no secret): on npmjs.com →
-#      package Settings → Trusted Publishers, add this repo + workflow
-#      (.github/workflows/release.yml). OIDC handles auth; provenance is automatic.
-#   B) Token fallback: create a granular npm automation token, store it as the
-#      NPM_TOKEN repo secret, and uncomment the NODE_AUTH_TOKEN env below.
+# Auth: Trusted Publishing (OIDC, no secret). Registered on npmjs.com →
+#   package Settings → Trusted Publishers (this repo + this workflow).
+#   id-token: write below grants the OIDC token; provenance is automatic.
 #
 # Release flow:
 #   1. bump "version" in package.json + update CHANGELOG.md, commit, push
@@ -65,5 +62,3 @@ jobs:
 
       - name: Publish to npm
         run: pnpm publish --access public --provenance --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
