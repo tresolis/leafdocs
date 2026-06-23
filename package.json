@@ -1,0 +1,48 @@
+{
+  "name": "leafdocs",
+  "version": "0.1.0",
+  "description": "Markdown → HTML static docs site generator with Vite plugin",
+  "type": "module",
+  "bin": {
+    "leafdocs": "./cli.mjs"
+  },
+  "exports": {
+    ".": "./cli.mjs",
+    "./vite": "./vite.mjs"
+  },
+  "keywords": [
+    "markdown",
+    "docs",
+    "vite",
+    "static-site"
+  ],
+  "license": "MIT",
+  "author": "Loeiz Tanguy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tresolis/leafdocs.git"
+  },
+  "homepage": "https://github.com/tresolis/leafdocs#readme",
+  "bugs": "https://github.com/tresolis/leafdocs/issues",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "cli.mjs",
+    "vite.mjs",
+    "cdn.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "provenance": true
+  },
+  "dependencies": {
+    "marked": "^18.0.5",
+    "pagefind": "^1.5.2"
+  },
+  "peerDependencies": {
+    "vite": ">=5"
+  }
+}

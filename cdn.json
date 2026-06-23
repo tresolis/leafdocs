@@ -1,0 +1,7 @@
+{
+  "scalar-api-reference": {
+    "version": "1.52.5",
+    "url": "https://cdn.jsdelivr.net/npm/@scalar/api-reference@{version}/dist/browser/standalone.js",
+    "integrity": "sha256-4dXQ6dxLUjJdEuje1x/blcohhK6GW3DHYm6f8ExiMK0="
+  }
+}

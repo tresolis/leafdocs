@@ -1,0 +1,69 @@
+# Publishes leafdocs to npm with provenance when a v* tag is pushed.
+#
+# Auth — two options:
+#   A) Trusted Publishing (recommended, no secret): on npmjs.com →
+#      package Settings → Trusted Publishers, add this repo + workflow
+#      (.github/workflows/release.yml). OIDC handles auth; provenance is automatic.
+#   B) Token fallback: create a granular npm automation token, store it as the
+#      NPM_TOKEN repo secret, and uncomment the NODE_AUTH_TOKEN env below.
+#
+# Release flow:
+#   1. bump "version" in package.json + update CHANGELOG.md, commit, push
+#   2. GitHub → Releases → Draft a new release, create tag v0.1.0, publish
+#      → this workflow fires and publishes to npm
+
+name: Release
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # required for provenance / trusted publishing
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Verify version matches release tag
+        if: github.event_name == 'release'
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          pkg="$(node -p "require('./package.json').version")"
+          tag="${TAG#v}"
+          if [ "$pkg" != "$tag" ]; then
+            echo "::error::package.json version ($pkg) != release tag ($tag). Bump package.json before releasing."
+            exit 1
+          fi
+          echo "✅ version $pkg matches tag $TAG"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Smoke test (init + build)
+        run: |
+          tmp="$(mktemp -d)"
+          node cli.mjs init "$tmp"
+          node cli.mjs --root "$tmp"
+          test -d "$tmp/dist"
+
+      - name: Publish to npm
+        run: pnpm publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
